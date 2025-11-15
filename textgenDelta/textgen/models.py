@@ -13,6 +13,7 @@ class TextGenerationSettings(models.Model):
     max_tokens = models.IntegerField(default=2048)
     top_p = models.FloatField(default=1.0)
     top_k = models.IntegerField(default=50)
+    model_path = models.CharField(default="./qwen2.5b_q4k.gguf")
 
     def __str__(self):
         return f"{self.role} - Temp: {self.temperature}, Max Tokens: {self.max_tokens}"

@@ -2,10 +2,9 @@ import llama_cpp
 from llama_cpp import ChatCompletionRequestUserMessage, ChatCompletionRequestAssistantMessage, ChatCompletionRequestSystemMessage
 from textgen.models import TextGenerationSettings
 
-def generate_text(prompt: str, role: str = 'user', temperature: float = 0.7, max_tokens: int = 100, top_p: float = 1.0,
-                  top_k: int = 50):
+def generate_text(prompt: str, role: str = 'user', temperature: float = 0.7, max_tokens: int = 100, top_p: float = 1.0,top_k: int = 50,model_path=”.gguf”):
     model = llama_cpp.Llama(
-        model_path="/sdcard/Fuji/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+        model_path=model_path,
         chat_format="qwen",
         n_gpu_layers=-1,
         n_batch=512,
