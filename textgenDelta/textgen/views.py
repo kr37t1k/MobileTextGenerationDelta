@@ -1,17 +1,34 @@
+# textgen/views.py
 from django.shortcuts import render
 from django.http import JsonResponse
-from .generation import generate_text
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
+from .generation import generate_text # Import your updated generation function
 
-def generate_view(request):
-    if request.method == "POST":
-        prompt = request.POST.get('prompt', '')
-        role = request.POST.get('role', 'user')
-        temperature = float(request.POST.get('temperature', 0.7))
-        max_tokens = int(request.POST.get('max_tokens', 100))
-        top_p = float(request.POST.get('top_p', 1.0))
-        top_k = int(request.POST.get('top_k', 50))
+@require_http_methods(["GET"])
+def chat_view(request):
+    """Renders the chat interface."""
+    return render(request, 'textgen/chat.html')
 
-        generated_text = generate_text(prompt, role, temperature, max_tokens, top_p, top_k)
-        return JsonResponse({'generated_text': generated_text})
+@csrf_exempt # Ensure proper CSRF handling
+@require_http_methods(["POST"])
+def generate_ajax(request):
+    """Handles the AJAX request for text generation."""
+    try:
+        data = json.loads(request.body)
+        prompt = data.get('prompt', '')
+        if not prompt:
+            return JsonResponse({'error': 'Prompt is required'}, status=400)
 
-    return render(request, 'textgen/generate.html')
+        # Call your generation function
+        response_text = generate_text(prompt=prompt) # Use your updated function
+
+        return JsonResponse({'response': response_text})
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        # Log the error for debugging
+        import logging
+        logging.exception("Error generating text")
+        return JsonResponse({'error': 'Internal server error'}, status=500)
