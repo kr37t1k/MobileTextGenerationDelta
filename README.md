@@ -23,8 +23,13 @@
     *   Open Termux.
     *   Clone this repository to your phone:
         ```bash
+<<<<<<< Updated upstream
         git clone https://github.com/kr37t1k/MobileTextGenerationDelta
         cd MobileTextGenerationDelta
+=======
+        git clone <URL_OF_YOUR_REPOSITORY> # Replace with the actual URL
+        cd <REPOSITORY_NAME> # Replace with the name of your cloned folder
+>>>>>>> Stashed changes
         ```
 4.  **Install Dependencies in Termux:**
     *   Update the package list:
@@ -37,7 +42,11 @@
         ```
     *   Install Python packages using pip:
         ```bash
+<<<<<<< Updated upstream
         pip install fastapi flask django llama-cpp-python
+=======
+        pip install fastapi flask django llama-cpp-python # Add other specific requirements if listed in a requirements.txt file
+>>>>>>> Stashed changes
         ```
     *   You might also need other standard development tools:
         ```bash
@@ -53,7 +62,11 @@
 
 1.  **Navigate to Project Directory:** In Termux, go to the directory where you cloned the repository:
     ```bash
+<<<<<<< Updated upstream
     cd /path/to/your/MobileTextGenerationDelta
+=======
+    cd /path/to/your/TextGenerationDelta
+>>>>>>> Stashed changes
     ```
 2.  **Run the Django Server:**
     *   Execute the Django development server. To make it accessible from other devices on your network (recommended for easier access), specify the host and port:
