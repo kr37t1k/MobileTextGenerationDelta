@@ -11,7 +11,7 @@ class TextGenerationSettings(models.Model):
     role = models.CharField(max_length=20, choices=role_choices, default='user')
     temperature = models.FloatField(default=0.7)
     max_tokens = models.IntegerField(default=2048)
-    model_path = models.CharField(default="./qwen2.5b_q4k.gguf")
+    model_path = models.CharField(default="./qwen2.5b_q4k.gguf", max_length=120)
     top_p = models.FloatField(default=1.0)
     top_k = models.IntegerField(default=50)
 

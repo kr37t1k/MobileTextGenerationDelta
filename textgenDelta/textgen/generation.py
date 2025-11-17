@@ -9,7 +9,7 @@ settings that can be overridden by database entries.
 import logging
 from typing import Optional, Dict, Any
 import llama_cpp
-from textgen.models import TextGenerationSettings # Assuming Django model
+from .models import TextGenerationSettings # Assuming Django model
 
 # Configure logging for this module
 logger = logging.getLogger(__name__)

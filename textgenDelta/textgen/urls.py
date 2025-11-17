@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.generate_view, name='generate_text'),
+    path('', views.generate_ajax, name='generate_text'),
 ]
