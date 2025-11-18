@@ -1,5 +1,5 @@
 # textgen/views.py
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -10,7 +10,7 @@ import json
 
 
 @require_http_methods(["GET", "POST"])
-def index(request):
+def index(request: HttpRequest) -> HttpResponse:
     # Fetch all chats, ordered by newest first (as defined in Chat.Meta.ordering)
     chats = Chat.objects.all()
 
@@ -30,20 +30,51 @@ def index(request):
     )
 
     if request.method == 'POST':
-        prompt = request.POST.get('prompt', '').strip()
-        if prompt:
+        if request.content_type == 'application/x-www-form-urlencoded':
+            # Handle standard form submission (e.g., if JavaScript is disabled)
+            prompt = request.POST.get('prompt', '').strip()
+            if prompt:
+                try:
+                    response_text = generate_text(prompt=prompt)
+                    if response_text:
+                        pass  # Chat is saved automatically in generate_text
+                    else:
+                        messages.error(request, 'Failed to generate response.')
+                except Exception as e:
+                    import logging
+                    logging.exception("Error generating text in view")
+                    messages.error(request, 'An error occurred during generation.')
+            return redirect('textgen:index')  # Redirect for standard form submission
+
+        elif request.content_type.startswith('application/json'):
+            # Handle AJAX/JSON request from JavaScript fetch
+            import json
             try:
-                # response_text = generate_text(prompt=prompt, temperature=default_settings.temperature, ...)
-                response_text = generate_text(prompt=prompt)
-                if response_text:
-                    pass  # Chat is saved automatically in generate_text
-                else:
-                    messages.error(request, 'Failed to generate response.')
-            except Exception as e:
-                import logging
-                logging.exception("Error generating text in view")
-                messages.error(request, 'An error occurred during generation.')
-            return redirect('textgen:index')
+                data = json.loads(request.body)
+                prompt = data.get('prompt', '').strip()
+            except json.JSONDecodeError:
+                return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+            if prompt:
+                try:
+                    response_text = generate_text(prompt=prompt)
+                    if response_text:
+                        # Fetch the newly created chat object to return its details
+                        latest_chat = Chat.objects.latest('id')  # Or filter by prompt/response if not latest
+                        return JsonResponse({
+                            'success': True,
+                            'prompt': latest_chat.prompt,
+                            'response': latest_chat.response,
+                            'timestamp': latest_chat.timestamp.isoformat()  # Format timestamp for JS
+                        })
+                    else:
+                        return JsonResponse({'error': 'Failed to generate response.'}, status=500)
+                except Exception as e:
+                    import logging
+                    logging.exception("Error generating text in view for AJAX")
+                    return JsonResponse({'error': 'An error occurred during generation.'}, status=500)
+            else:
+                return JsonResponse({'error': 'Prompt is required'}, status=400)
 
     # Pass the default settings to the template context if needed for initial JS values
     context = {

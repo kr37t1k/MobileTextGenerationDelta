@@ -40,19 +40,34 @@ document.addEventListener('DOMContentLoaded', function() {
         chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Scroll to bottom
 
         try {
-            const response = await fetch("", {
+            // Send as JSON
+            const response = await fetch('', {
                 method: 'POST',
-                body: new URLSearchParams({ prompt }),
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Include CSRF token for JSON
+                },
+                body: JSON.stringify({ prompt: prompt }), // Send as JSON
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json().catch(() => ({ error: `HTTP error! status: ${response.status}` }));
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
             }
 
-            // For POST-redirect-GET, the page reloads, showing the new chat item.
+            const data = await response.json(); // Expect JSON response from Django
+            if (data.success) {
+                // Update the placeholder with the actual response
+                const aiBubble = messageContainer.querySelector('.message-ai .message-content');
+                if (aiBubble) {
+                    aiBubble.textContent = data.response;
+                }
+                // Optionally, add the timestamp or other data if needed in the UI
+            } else {
+                throw new Error(data.error || 'Unknown error from server');
+            }
+
+            // Clear the input field after successful submission
             promptInput.value = '';
             promptInput.style.height = '40px'; // Reset height
 
@@ -70,13 +85,4 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingIndicator.classList.add('d-none');
         }
     });
-
-    // Optional: Add functionality to click on sidebar items (requires backend changes for context loading)
-    // document.querySelectorAll('.chat-history-list li').forEach(item => {
-    //     item.addEventListener('click', function() {
-    //         // Logic to load chat context (requires backend changes)
-    //         document.querySelectorAll('.chat-history-list li').forEach(i => i.classList.remove('active'));
-    //         this.classList.add('active');
-    //     });
-    // });
 });
