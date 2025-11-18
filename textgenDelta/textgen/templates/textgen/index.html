@@ -3,66 +3,120 @@
 {% block title %}Chat - TextGenerationDelta{% endblock %}
 
 {% block content %}
-<div class="container-fluid h-100">
-    <div class="row h-100">
-        <!-- Sidebar (Optional - could hold settings, model selection, etc.) -->
-        <!-- <div class="col-md-3 bg-light d-none d-md-block p-3">
-             <h5>Settings</h5>
-             <p>Temperature: 0.7</p>
-             <p>Max Tokens: 200</p>
-         </div> -->
+<div class="container-fluid">
+    <div class="chat-container">
+        <!-- Sidebar for Chat History -->
+        <div class="sidebar">
+            <h4>Chat History</h4>
+            <ul class="chat-history-list">
+                {% for chat in chats %}
+                    <li data-chat-id="{{ chat.id }}">
+                        <div class="chat-title">{{ chat.prompt|truncatechars:30 }}</div> <!-- Truncate prompt as title -->
+                        <div class="chat-date">{{ chat.timestamp|date:"M d, H:i" }}</div> <!-- Format date -->
+                    </li>
+                {% empty %}
+                    <li><em>No chats yet.</em></li>
+                {% endfor %}
+            </ul>
+            <!-- Settings Button -->
+            <button class="settings-btn" id="openSettingsBtn">
+                <i class="bi bi-gear"></i> <!-- Settings icon -->
+                <span>Settings</span>
+            </button>
+        </div>
 
         <!-- Main Chat Area -->
-        <div class="col-md-12"> <!-- Adjust col-md-9 if using sidebar -->
-            <div class="chat-container d-flex flex-column h-100">
-
-                <!-- Chat History Display Area -->
-                <div id="chatHistory" class="chat-history flex-grow-1 overflow-auto p-3">
-                    {% if chats %}
-                        {% for chat in chats %}
-                            <div class="message-container mb-3">
-                                <!-- User Message -->
-                                <div class="message-user d-flex justify-content-end mb-1">
-                                    <div class="message-bubble bg-primary text-white p-3 rounded">
-                                        <div class="message-content">{{ chat.prompt }}</div>
-                                    </div>
-                                </div>
-                                <!-- AI Message -->
-                                <div class="message-ai d-flex justify-content-start mb-1">
-                                    <div class="message-bubble bg-light border p-3 rounded">
-                                        <div class="message-content">{{ chat.response }}</div>
-                                    </div>
+        <div class="main-chat">
+            <div id="chatHistory">
+                {% if chats %}
+                    {% for chat in chats %}
+                        <div class="message-container mb-3">
+                            <!-- User Message -->
+                            <div class="message-user d-flex justify-content-end mb-1">
+                                <div class="message-bubble bg-primary text-white p-3 rounded">
+                                    <div class="message-content">{{ chat.prompt }}</div>
                                 </div>
                             </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="welcome-message text-center my-auto p-4 text-muted">
-                            <h2>Welcome to TextGenerationDelta</h2>
-                            <p>Send a message to start chatting with your local AI.</p>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- Input Area -->
-                <div class="input-area p-3 border-top bg-white">
-                    <form id="chatForm" method="post">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <textarea class="form-control" id="promptInput" name="prompt" rows="1" placeholder="Type your message here..." required></textarea>
-                            <button class="btn btn-primary" type="submit" id="sendButton">
-                                <i class="bi bi-send"></i> <!-- Send icon -->
-                            </button>
-                        </div>
-                        <!-- Loading Indicator (Initially Hidden) -->
-                        <div id="loadingIndicator" class="mt-2 d-none text-center">
-                            <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                <span class="visually-hidden">Thinking...</span>
+                            <!-- AI Message -->
+                            <div class="message-ai d-flex justify-content-start mb-1">
+                                <div class="message-bubble bg-light border p-3 rounded">
+                                    <div class="message-content">{{ chat.response }}</div>
+                                </div>
                             </div>
-                            <small class="text-muted">AI is thinking...</small>
                         </div>
-                    </form>
-                </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="welcome-message">
+                        <h2>Welcome to TextGenerationDelta</h2>
+                        <p>Send a message to start chatting with your local AI.</p>
+                    </div>
+                {% endif %}
             </div>
+
+            <!-- Input Area at the Bottom -->
+            <div class="input-area">
+                <form id="chatForm" method="post">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <textarea class="form-control" id="promptInput" name="prompt" rows="1" placeholder="Type your message..." required></textarea>
+                        <button class="btn btn-primary" type="submit" id="sendButton" title="Send">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                    <!-- Loading Indicator (Initially Hidden) -->
+                    <div id="loadingIndicator" class="d-none">
+                        <div class="spinner"></div>
+                        <span>AI is thinking...</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="settings-modal">
+    <div class="settings-modal-content">
+        <div class="settings-modal-header">
+            <h4 class="settings-modal-title">AI Settings</h4>
+            <button class="settings-modal-close" id="closeSettingsBtn">&times;</button>
+        </div>
+        <div class="settings-modal-body">
+            <form id="settingsForm">
+                <div class="settings-form-group">
+                    <label for="roleInput" class="settings-form-label">Role:</label>
+                    <input type="text" id="roleInput" class="settings-form-input" value="user">
+                </div>
+                <div class="settings-form-group">
+                    <label for="seedInput" class="settings-form-label">Seed:</label>
+                    <input type="number" id="seedInput" class="settings-form-input" value="-1">
+                </div>
+                <div class="settings-form-group">
+                    <label for="temperatureInput" class="settings-form-label">Temperature:</label>
+                    <input type="number" step="0.01" min="0" max="2" id="temperatureInput" class="settings-form-input" value="0.7">
+                </div>
+                <div class="settings-form-group">
+                    <label for="maxTokensInput" class="settings-form-label">Max Tokens:</label>
+                    <input type="number" min="1" id="maxTokensInput" class="settings-form-input" value="200">
+                </div>
+                <div class="settings-form-group">
+                    <label for="modelPathInput" class="settings-form-label">Model Path:</label>
+                    <input type="text" id="modelPathInput" class="settings-form-input" value="./qwen2.5b.gguf">
+                </div>
+                <div class="settings-form-group">
+                    <label for="topPInput" class="settings-form-label">Top P:</label>
+                    <input type="number" step="0.01" min="0" max="1" id="topPInput" class="settings-form-input" value="1.0">
+                </div>
+                <div class="settings-form-group">
+                    <label for="topKInput" class="settings-form-label">Top K:</label>
+                    <input type="number" min="0" id="topKInput" class="settings-form-input" value="50">
+                </div>
+                <!-- Add more settings fields as needed -->
+            </form>
+        </div>
+        <div class="settings-modal-footer">
+            <button type="button" class="settings-modal-btn settings-modal-btn-secondary" id="cancelSettingsBtn">Cancel</button>
+            <button type="button" class="settings-modal-btn settings-modal-btn-primary" id="saveSettingsBtn">Save</button>
         </div>
     </div>
 </div>
@@ -73,54 +127,132 @@ document.addEventListener('DOMContentLoaded', function() {
     const promptInput = document.getElementById('promptInput');
     const chatHistoryDiv = document.getElementById('chatHistory');
     const loadingIndicator = document.getElementById('loadingIndicator');
+    const sendButton = document.getElementById('sendButton');
 
-    // Function to add a message to the chat history display
-    function addMessageToDisplay(prompt, response) {
-        const messageContainer = document.createElement('div');
-        messageContainer.className = 'message-container mb-3';
+    // Settings Modal Elements
+    const settingsModal = document.getElementById('settingsModal');
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    const settingsForm = document.getElementById('settingsForm');
 
-        // User message bubble
-        const userBubble = document.createElement('div');
-        userBubble.className = 'message-user d-flex justify-content-end mb-1';
-        userBubble.innerHTML = `
-            <div class="message-bubble bg-primary text-white p-3 rounded">
-                <div class="message-content">${prompt}</div>
-            </div>
-        `;
+    // Open Settings Modal
+    openSettingsBtn.addEventListener('click', function() {
+        settingsModal.style.display = 'block';
+    });
 
-        // AI message bubble
-        const aiBubble = document.createElement('div');
-        aiBubble.className = 'message-ai d-flex justify-content-start mb-1';
-        aiBubble.innerHTML = `
-            <div class="message-bubble bg-light border p-3 rounded">
-                <div class="message-content">${response}</div>
-            </div>
-        `;
-
-        messageContainer.appendChild(userBubble);
-        messageContainer.appendChild(aiBubble);
-        chatHistoryDiv.appendChild(messageContainer);
-
-        // Scroll to the bottom
-        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    // Close Settings Modal (X button, Cancel button, or clicking outside)
+    function closeModal() {
+        settingsModal.style.display = 'none';
     }
 
+    closeSettingsBtn.addEventListener('click', closeModal);
+    cancelSettingsBtn.addEventListener('click', closeModal);
+
+    // Close modal if clicked outside the content
+    window.addEventListener('click', function(event) {
+        if (event.target === settingsModal) {
+            closeModal();
+        }
+    });
+
+    // Save Settings (Placeholder - you'll need to implement saving to backend)
+    saveSettingsBtn.addEventListener('click', function() {
+        // Get values from the form
+        const role = document.getElementById('roleInput').value;
+        const seed = document.getElementById('seedInput').value;
+        const temperature = document.getElementById('temperatureInput').value;
+        const modelPath = document.getElementById('modelPathInput').value;
+        const maxTokens = document.getElementById('maxTokensInput').value;
+        const topP = document.getElementById('topPInput').value;
+        const topK = document.getElementById('topKInput').value;
+
+        // Example: Log the settings (replace with actual saving logic)
+        console.log('Saving settings:', { role, seed, temperature, modelPath, maxTokens, topP, topK });
+
+        // You could store these in localStorage temporarily
+        localStorage.setItem('aiSettings', JSON.stringify({
+            role: role,
+            seed: parseInt(seed),
+            temperature: parseFloat(temperature),
+            modelPath: modelPath,
+            maxTokens: parseInt(maxTokens),
+            topP: parseFloat(topP),
+            topK: parseInt(topK)
+        }));
+
+        // Close the modal after saving
+        closeModal();
+
+        // Optionally, show a confirmation message
+        alert('Settings saved locally!');
+    });
+
+    // Load Settings from localStorage on page load (if available)
+    window.addEventListener('load', function() {
+        const savedSettings = localStorage.getItem('aiSettings');
+        if (savedSettings) {
+            try {
+                const settings = JSON.parse(savedSettings);
+                document.getElementById('roleInput').value = settings.role || 'user';
+                document.getElementById('seedInput').value = settings.seed || -1;
+                document.getElementById('modelPathInput').value = settings.modelPath || './qwen2.5b.gguf';
+                document.getElementById('temperatureInput').value = settings.temperature || 0.7;
+                document.getElementById('maxTokensInput').value = settings.maxTokens || 200;
+                document.getElementById('topPInput').value = settings.topP || 1.0;
+                document.getElementById('topKInput').value = settings.topK || 50;
+            } catch (e) {
+                console.error('Error loading settings from localStorage:', e);
+            }
+        }
+    });
+
+    // Auto-resize textarea
+    promptInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 150) + 'px'; // Cap at 150px
+    });
+
+    // Handle Enter key (without Shift) for submission
+    promptInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault(); // Prevent default Enter (new line)
+            form.dispatchEvent(new Event('submit')); // Trigger form submit
+        }
+    });
+
+    // Form Submission Handler
     form.addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault();
 
         const prompt = promptInput.value.trim();
-        if (!prompt) return; // Don't send empty prompts
+        if (!prompt) return;
 
         // Disable input and show loading
         promptInput.disabled = true;
-        document.getElementById('sendButton').disabled = true;
+        sendButton.disabled = true;
         loadingIndicator.classList.remove('d-none');
 
         // Add user message to display immediately (optimistic update)
-        addMessageToDisplay(prompt, '...'); // Placeholder while waiting
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'message-container mb-3';
+        messageContainer.innerHTML = `
+            <div class="message-user d-flex justify-content-end mb-1">
+                <div class="message-bubble bg-primary text-white p-3 rounded">
+                    <div class="message-content">${prompt}</div>
+                </div>
+            </div>
+            <div class="message-ai d-flex justify-content-start mb-1">
+                <div class="message-bubble bg-light border p-3 rounded">
+                    <div class="message-content">...</div> <!-- Placeholder -->
+                </div>
+            </div>
+        `;
+        chatHistoryDiv.appendChild(messageContainer);
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Scroll to bottom
 
         try {
-            // Submit the form using FormData and fetch
             const formData = new FormData(form);
             const response = await fetch(form.action, {
                 method: 'POST',
@@ -131,34 +263,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // For a simple POST-redirect-GET, the page will reload after this block.
-            // If you want to handle response without reload, you might need to return JSON from the view.
-            // For now, we assume the page reloads after the Django view processes and redirects.
-            // The new chat entry will appear on the reloaded page.
-
-            // Clear the input field after submission
+            // For POST-redirect-GET, the page reloads, showing the new chat item.
             promptInput.value = '';
+            promptInput.style.height = '40px'; // Reset height
 
         } catch (error) {
             console.error('Error submitting prompt:', error);
-            // Handle error (e.g., show a message in the chat)
-            const lastMessageContainer = chatHistoryDiv.lastChild;
-            if (lastMessageContainer && lastMessageContainer.querySelector('.message-content').textContent === '...') {
-                lastMessageContainer.querySelector('.message-content').textContent = `Error: ${error.message}`;
+            // Update the placeholder response with error
+            const aiBubble = messageContainer.querySelector('.message-ai .message-content');
+            if (aiBubble) {
+                aiBubble.textContent = `Error: ${error.message}`;
             }
         } finally {
             // Re-enable input and hide loading
             promptInput.disabled = false;
-            document.getElementById('sendButton').disabled = true;
+            sendButton.disabled = false;
             loadingIndicator.classList.add('d-none');
         }
     });
 
-    // Auto-resize textarea
-    promptInput.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
+    // Optional: Add functionality to click on sidebar items (requires backend changes for context loading)
+    // document.querySelectorAll('.chat-history-list li').forEach(item => {
+    //     item.addEventListener('click', function() {
+    //         // Logic to load chat context (requires backend changes)
+    //         document.querySelectorAll('.chat-history-list li').forEach(i => i.classList.remove('active'));
+    //         this.classList.add('active');
+    //     });
+    // });
 });
 </script>
 

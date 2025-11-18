@@ -1,75 +1,473 @@
-/* Base styles */
+/* General Body Styling - White/Grey Theme */
 body {
-  /* Use a modern, readable font */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: #f8f9fa; /* Light grey background */
-}
-
-/* Chat Container */
-.chat-container {
-  height: 80vh; /* Adjust based on your needs, considering navbar/footer */
-  max-height: calc(100vh - 120px); /* Subtract navbar/footer height */
-  border: 1px solid #dee2e6; /* Light border */
-  border-radius: 0.5rem; /* Rounded corners */
-  background-color: white; /* White background for the chat area */
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Subtle shadow */
+  color: #212529; /* Dark grey text */
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden; /* Prevents scrollbars on the body */
   display: flex;
   flex-direction: column;
 }
 
-/* Chat History Area */
-.chat-history {
-  overflow-y: auto; /* Scrollable if content overflows */
-  padding: 1rem; /* Add padding inside */
-  background-color: #f9f9f9; /* Slightly different background for history */
+/* Container for the entire layout */
+.container-fluid {
+  height: calc(100vh - 56px - 56px); /* Full height minus navbar and footer height */
+  padding: 0;
+  display: flex;
 }
 
-/* Message Bubbles */
+/* Chat Container - Main Area */
+.chat-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background-color: #ffffff; /* White background */
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 250px; /* Fixed width for the sidebar */
+  background-color: #f0f2f5; /* Light grey background */
+  border-right: 1px solid #dee2e6; /* Light border */
+  padding: 15px;
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  overflow-y: auto; /* Scrollable if chats exceed height */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+.sidebar h4 {
+  color: #495057;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 10px;
+}
+
+.chat-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0; /* Add bottom margin before settings button */
+  flex-grow: 1; /* Takes available vertical space */
+}
+
+.chat-history-list li {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background-color: #ffffff; /* White background for list items */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease; /* Smooth hover and click */
+  border: 1px solid #e9ecef; /* Light border */
+  word-break: break-word; /* Wrap long chat titles */
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-history-list li:hover {
+  background-color: #e9ecef; /* Slightly darker on hover */
+  transform: translateY(-1px); /* Subtle lift on hover */
+}
+
+.chat-history-list li.active {
+  background-color: #dae0e7; /* Highlight active chat */
+  font-weight: 500;
+  border-color: #adb5bd; /* Slightly darker border for active */
+}
+
+.chat-history-list li .chat-title {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-history-list li .chat-date {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+/* Settings Button in Sidebar */
+.settings-btn {
+  margin-top: auto; /* Pushes the button to the bottom */
+  padding: 10px;
+  background-color: #e9ecef; /* Light grey background */
+  border: 1px solid #ced4da; /* Light border */
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #495057;
+  transition: background-color 0.2s ease, transform 0.1s ease; /* Smooth hover and click */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between icon and text */
+}
+
+.settings-btn:hover {
+  background-color: #dee2e6; /* Slightly darker on hover */
+  transform: translateY(-1px); /* Subtle lift on hover */
+}
+
+.settings-btn i {
+  font-size: 1rem; /* Icon size */
+}
+
+/* Main Chat Area */
+.main-chat {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa; /* Light grey background */
+}
+
+/* Chat Messages Display Area */
+#chatHistory {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f8f9fa; /* Light grey background for message area */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between messages */
+}
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+  opacity: 0; /* Initial state for animation */
+  transform: translateY(10px); /* Start slightly below */
+  animation: fadeInUp 0.4s ease forwards; /* Apply slow fade-in animation */
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0); /* End at normal position */
+  }
+}
+
+.message-user {
+  align-self: flex-end; /* Align user messages to the right */
+  max-width: 80%; /* Limit message width */
+}
+
+.message-ai {
+  align-self: flex-start; /* Align AI messages to the left */
+  max-width: 80%; /* Limit message width */
+}
+
 .message-bubble {
-  max-width: 80%; /* Prevent bubbles from being too wide */
-  word-wrap: break-word; /* Break long words */
-  white-space: pre-wrap; /* Preserve line breaks and spaces */
-  border-radius: 0.75rem; /* More rounded corners */
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Subtle shadow */
+  padding: 12px 16px;
+  border-radius: 18px; /* Rounded corners */
+  word-wrap: break-word;
+  white-space: pre-wrap; /* Preserve line breaks */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  position: relative; /* For potential pseudo-elements */
+  transition: opacity 0.2s ease; /* Smooth opacity change if needed */
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
-/* User Message Bubble */
 .message-user .message-bubble {
-  background-color: #0d6efd; /* Primary color (Bootstrap) */
+  background-color: #0d6efd; /* Primary blue for user */
   color: white;
-  border-bottom-right-radius: 0; /* Pointy end on the right for user */
+  border-bottom-right-radius: 4px; /* Pointy end on the right */
 }
 
-/* AI Message Bubble */
 .message-ai .message-bubble {
   background-color: #e9ecef; /* Light grey for AI */
-  border: 1px solid #ced4da; /* Subtle border */
-  border-bottom-left-radius: 0; /* Pointy end on the left for AI */
+  color: #212529;
+  border-bottom-left-radius: 4px; /* Pointy end on the left */
 }
 
-/* Input Area */
+/* Input Area Styling - Positioned at the bottom */
 .input-area {
-  border-top: 1px solid #dee2e6; /* Separator line */
+  padding: 15px 20px;
+  background-color: #ffffff; /* White background */
+  border-top: 1px solid #dee2e6; /* Light border */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space above loading indicator */
 }
 
-/* Welcome Message */
-.welcome-message {
-  color: #6c757d; /* Muted color */
-  font-style: italic;
+.input-group {
+  display: flex;
+  align-items: flex-end; /* Align items (textarea, button) to the bottom */
+  gap: 10px; /* Space between textarea and button */
+  width: 100%; /* Full width */
+}
+
+#promptInput {
+  flex-grow: 1;
+  resize: none; /* Disable manual resize */
+  max-height: 150px; /* Limit height */
+  min-height: 40px; /* Minimum height */
+  padding: 12px 15px;
+  border: 1px solid #ced4da;
+  border-radius: 20px; /* Rounded input field */
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none; /* Remove default focus outline */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions */
+  background-color: #f8f9fa; /* Light grey background */
+  color: #212529; /* Dark text */
+  width: calc(100% - 50px); /* Adjust width to account for button */
+}
+
+#promptInput:focus {
+  border-color: #86b7fe; /* Blue border on focus */
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Focus ring */
+}
+
+#sendButton {
+  background-color: #0d6efd; /* Primary blue button */
+  border: none;
+  color: white;
+  border-radius: 50%; /* Circular button */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease; /* Smooth hover and click */
+  flex-shrink: 0; /* Prevent button from shrinking */
+  align-self: flex-end; /* Align to bottom of input group */
+  margin-bottom: 2px; /* Align with input padding */
+}
+
+#sendButton:hover {
+  background-color: #0b5ed7; /* Darker blue on hover */
+  transform: scale(1.05); /* Slight scale on hover */
+}
+
+#sendButton:disabled {
+  background-color: #adb5bd; /* Grey when disabled */
+  cursor: not-allowed;
+  transform: none; /* No scale when disabled */
 }
 
 /* Loading Indicator */
 #loadingIndicator {
-  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  color: #6c757d; /* Muted text color */
+  font-size: 0.9rem;
+  gap: 8px;
+  align-self: center; /* Center the loading indicator */
 }
 
-/* Responsive adjustments */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e9ecef;
+  border-top: 2px solid #0d6efd;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Welcome Message */
+.welcome-message {
+  text-align: center;
+  color: #6c757d; /* Muted color */
+  font-style: italic;
+  flex-grow: 1; /* Take available space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Settings Modal Styles */
+.settings-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1050; /* High z-index to appear above other content */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  backdrop-filter: blur(5px); /* Blur effect behind modal */
+  animation: fadeIn 0.3s ease; /* Fade in animation */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.settings-modal-content {
+  background-color: #ffffff;
+  margin: 15% auto; /* Center vertically and horizontally */
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px; /* Limit width */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+  animation: slideIn 0.3s ease; /* Slide in animation */
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.settings-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 10px;
+}
+
+.settings-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #212529;
+}
+
+.settings-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.settings-modal-close:hover {
+  background-color: #e9ecef;
+}
+
+.settings-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between form elements */
+}
+
+.settings-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Space between label and input */
+}
+
+.settings-form-label {
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.settings-form-input {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.settings-form-input:focus {
+  outline: none;
+  border-color: #86b7fe; /* Blue border on focus */
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Focus ring */
+}
+
+.settings-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+  border-top: 1px solid #dee2e6;
+  padding-top: 15px;
+}
+
+.settings-modal-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.settings-modal-btn-primary {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.settings-modal-btn-primary:hover {
+  background-color: #0b5ed7;
+}
+
+.settings-modal-btn-secondary {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.settings-modal-btn-secondary:hover {
+  background-color: #dee2e6;
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .chat-container {
-    height: 75vh; /* Adjust height for smaller screens */
-    max-height: calc(100vh - 100px); /* Adjust for smaller navbar/footer */
+  .container-fluid {
+    height: calc(100vh - 56px); /* Adjust for smaller navbar/footer */
+  }
+  .sidebar {
+    width: 60px; /* Collapse sidebar on small screens */
+    padding: 5px;
+  }
+  .sidebar h4, .chat-history-list li .chat-title, .settings-btn span { /* Hide text labels on small screens */
+    display: none;
+  }
+  .chat-history-list li {
+    padding: 8px 5px; /* Smaller padding */
+    text-align: center; /* Center text if any */
+    font-size: 0.7rem; /* Smaller font */
+  }
+  .settings-btn {
+      justify-content: center; /* Center icon when text is hidden */
   }
   .message-bubble {
-    max-width: 90%; /* Allow wider bubbles on small screens */
+    max-width: 90%; /* Wider bubbles on small screens */
+  }
+  .input-area {
+    padding: 10px 15px;
+  }
+  #promptInput {
+    width: calc(100% - 50px); /* Adjust width for smaller screen */
+  }
+  .settings-modal-content {
+    width: 95%;
+    margin: 20% auto; /* Adjust centering for smaller screens */
   }
 }
