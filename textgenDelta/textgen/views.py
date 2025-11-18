@@ -8,6 +8,7 @@ from .generation import generate_text
 from .models import Chat, TextGenerationSettings
 import json
 
+
 @require_http_methods(["GET", "POST"])
 def index(request):
     # Fetch all chats, ordered by newest first (as defined in Chat.Meta.ordering)
@@ -35,7 +36,7 @@ def index(request):
                 # response_text = generate_text(prompt=prompt, temperature=default_settings.temperature, ...)
                 response_text = generate_text(prompt=prompt)
                 if response_text:
-                    pass # Chat is saved automatically in generate_text
+                    pass  # Chat is saved automatically in generate_text
                 else:
                     messages.error(request, 'Failed to generate response.')
             except Exception as e:
@@ -51,6 +52,7 @@ def index(request):
     }
     return render(request, 'textgen/index.html', context)
 
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def generate_ajax(request):
@@ -62,7 +64,7 @@ def generate_ajax(request):
             return JsonResponse({'error': 'Prompt is required'}, status=400)
 
         # Call your generation function
-        response_text = generate_text(prompt=prompt) # Use your updated function
+        response_text = generate_text(prompt=prompt)  # Use your updated function
 
         # Optionally return the new chat ID or just the response
         # If returning the full chat list, you might need to refetch it

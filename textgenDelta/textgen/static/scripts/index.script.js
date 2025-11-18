@@ -40,10 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
         chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Scroll to bottom
 
         try {
-            const formData = new FormData(form);
-            const response = await fetch(form.action, {
+            const response = await fetch("", {
                 method: 'POST',
-                body: "prompt=" + prompt,
+                body: new URLSearchParams({ prompt }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
             });
 
             if (!response.ok) {
