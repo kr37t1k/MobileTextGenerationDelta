@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class TextGenerationSettings(models.Model):
     role_choices = [
         ('user', 'User'),
@@ -18,3 +17,14 @@ class TextGenerationSettings(models.Model):
     def __str__(self):
         return f"{self.role} - Temp: {self.temperature}, Max Tokens: {self.max_tokens}"
 
+class Chat(models.Model):
+    prompt = models.TextField()
+    response = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)# Automatically set when created
+
+    def __str__(self):
+        # Simple representation for admin or debugging
+        return f"Chat: {self.prompt[:50]}..."# Show first 50 chars of prompt
+
+    class Meta:
+        ordering = ['-timestamp']# Ordering by newest first by default

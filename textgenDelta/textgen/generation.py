@@ -1,41 +1,30 @@
-"""
-MobileTextGenerationDelta - Generation Module
-
-This module handles the core text generation logic using llama-cpp-python.
-It loads a specified model and generates text based on a prompt, applying
-settings that can be overridden by database entries.
-"""
-
 import logging
-from typing import Optional, Dict, Any
+from typing import Optional
 import llama_cpp
-from .models import TextGenerationSettings # Assuming Django model
+from .models import TextGenerationSettings, Chat # Import the Chat model
 
 # Configure logging for this module
 logger = logging.getLogger(__name__)
 
 # --- Default Configuration ---
-# These are fallback values if no database settings are found for a role
-# or if the model path is not explicitly provided.
 DEFAULT_MODEL_PATH = "models/qwen2.5-1.5b-instruct-q4_k_m.gguf" # Updated default path example
 DEFAULT_CHAT_FORMAT = "qwen"
-DEFAULT_GPU_LAYERS = -1 # Attempt to offload all layers to GPU if available
+DEFAULT_GPU_LAYERS = -1
 DEFAULT_BATCH_SIZE = 512
 DEFAULT_THREADS = 4
-DEFAULT_SEED = -1
+DEFAULT_SEED = 1337
 DEFAULT_CONTEXT_LENGTH = 4096
 DEFAULT_VERBOSE = True
 
 # --- Generation Parameter Defaults ---
-# Used if no database settings are found for the specified role
 DEFAULT_TEMPERATURE = 0.7
-DEFAULT_MAX_TOKENS = 200  # Increased default from 100
+DEFAULT_MAX_TOKENS = 200
 DEFAULT_TOP_P = 1.0
 DEFAULT_TOP_K = 50
 
 # --- Generation Defaults ---
 DEFAULT_ROLE = 'user'
-DEFAULT_STOP_TOKENS = ["Q:", "\n\n"] # Added newline as a potential stop token
+DEFAULT_STOP_TOKENS = ["Q:", "\n\n"]
 
 def generate_text(
     prompt: str,
@@ -46,40 +35,14 @@ def generate_text(
     top_k: Optional[int] = None,
     model_path: Optional[str] = None,
     stop_sequences: Optional[list[str]] = None,
-    # Additional parameters can be added here if needed by llama_cpp.Llama.__call__
 ) -> str:
-    """
-    Generates text based on the provided prompt using a specified language model.
-
-    Args:
-        prompt (str): The input text prompt for the model.
-        role (str, optional): The user role used to fetch specific generation settings
-                              from the database (TextGenerationSettings). Defaults to 'user'.
-        temperature (float, optional): Controls randomness. Defaults to the value found
-                                       in the database for the role, or DEFAULT_TEMPERATURE.
-        max_tokens (int, optional): Maximum number of tokens to generate.
-                                    Defaults to the database value or DEFAULT_MAX_TOKENS.
-        top_p (float, optional): Nucleus sampling parameter. Defaults to the database
-                                 value or DEFAULT_TOP_P.
-        top_k (int, optional): Top-k sampling parameter. Defaults to the database
-                               value or DEFAULT_TOP_K.
-        model_path (str, optional): Path to the GGUF model file. Defaults to
-                                    the value in DEFAULT_MODEL_PATH.
-        stop_sequences (list[str], optional): List of strings upon which the generation
-                                              should stop. Defaults to DEFAULT_STOP_TOKENS.
-
-    Returns:
-        str: The generated text, or an empty string if an error occurs during generation.
-             Logs errors using the standard logging module.
-    """
     # Determine the final values for generation parameters
-    # Use provided values, fall back to database settings, then to defaults
     try:
         settings = TextGenerationSettings.objects.filter(role=role).first()
         logger.debug(f"Fetched settings for role '{role}': {settings}")
     except Exception as e:
         logger.error(f"Error fetching settings for role '{role}' from database: {e}")
-        settings = None # Fallback to defaults if database query fails
+        settings = None
 
     final_temperature = temperature if temperature is not None else \
                        (settings.temperature if settings and settings.temperature is not None else DEFAULT_TEMPERATURE)
@@ -100,7 +63,7 @@ def generate_text(
         logger.debug(f"Initializing Llama model with path: {final_model_path}")
         model = llama_cpp.Llama(
             model_path=final_model_path,
-            chat_format=DEFAULT_CHAT_FORMAT, # Consider making this configurable too
+            chat_format=DEFAULT_CHAT_FORMAT,
             n_gpu_layers=DEFAULT_GPU_LAYERS,
             n_batch=DEFAULT_BATCH_SIZE,
             n_threads=DEFAULT_THREADS,
@@ -117,22 +80,25 @@ def generate_text(
             top_p=final_top_p,
             top_k=final_top_k,
             stop=final_stop_sequences,
-            echo=False,  # Do not include the prompt in the output
+            echo=False,
         )
 
         logger.debug(f"Raw model result: {result}")
         generated_text = result["choices"][0]["text"]
         logger.info(f"Successfully generated text of length: {len(generated_text)}")
+
+        # --- Save Chat to Database ---
+        try:
+            Chat.objects.create(prompt=prompt, response=generated_text)
+            logger.debug(f"Saved chat to database: Prompt ID {Chat.objects.latest('id').id}")
+        except Exception as e:
+            logger.error(f"Error saving chat to database: {e}")
+        # ---
+
         return generated_text
 
     except FileNotFoundError:
         logger.error(f"Model file not found at path: {final_model_path}")
-        return ""
-    except llama_cpp.LlamaGrammarException as e:
-        logger.error(f"Llama grammar error during generation: {e}")
-        return ""
-    except llama_cpp.LlamaContextException as e:
-        logger.error(f"Llama context error during generation (e.g., context length exceeded): {e}")
         return ""
     except Exception as e:
         logger.error(f"An unexpected error occurred during text generation: {e}")
@@ -140,9 +106,7 @@ def generate_text(
 
 # Example usage (uncomment if running this file directly for testing)
 # if __name__ == "__main__":
-#     # Example prompt
 #     test_prompt = "Explain the concept of gravity in simple terms."
-#     # Example call using defaults and database settings for 'user' role
 #     generated = generate_text(prompt=test_prompt, role='user')
 #     print("--- Generated Text ---")
 #     print(generated)

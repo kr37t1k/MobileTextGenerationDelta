@@ -11,9 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import zoneinfo
-
-print(zoneinfo.available_timezones())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +25,7 @@ SECRET_KEY = 'django-insecure-i-%8(#g(+g%h31*6*&-d69lqoinr&f!*4a-&e@)w+p5b$x4mxf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.2.27", "127.0.0.1"]
+ALLOWED_HOSTS = ["192.168.2.27", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -120,6 +117,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR /'textgen/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

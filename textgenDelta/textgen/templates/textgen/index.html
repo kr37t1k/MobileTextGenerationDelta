@@ -1,0 +1,38 @@
+{% extends "textgen/base.html" %}
+
+{% block title %}Chat History - TextGenerationDelta{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>TextGenerationDelta Chat History</h1>
+
+    <!-- Display Chat History -->
+    <div id="chatHistory" class="mb-4">
+        {% for chat in chats %}
+            <div class="card mb-2">
+                <div class="card-header">
+                    <small class="text-muted">{{ chat.timestamp }}</small>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Prompt:</h6>
+                    <p class="card-text">{{ chat.prompt }}</p>
+                    <h6 class="card-title">Response:</h6>
+                    <p class="card-text">{{ chat.response }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No chat history yet.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Form for New Prompt -->
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="promptInput" class="form-label">New Prompt:</label>
+            <textarea class="form-control" id="promptInput" name="prompt" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send to AI</button>
+    </form>
+</div>
+{% endblock %}
