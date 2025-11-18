@@ -1,38 +1,165 @@
 {% extends "textgen/base.html" %}
 
-{% block title %}Chat History - TextGenerationDelta{% endblock %}
+{% block title %}Chat - TextGenerationDelta{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>TextGenerationDelta Chat History</h1>
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <!-- Sidebar (Optional - could hold settings, model selection, etc.) -->
+        <!-- <div class="col-md-3 bg-light d-none d-md-block p-3">
+             <h5>Settings</h5>
+             <p>Temperature: 0.7</p>
+             <p>Max Tokens: 200</p>
+         </div> -->
 
-    <!-- Display Chat History -->
-    <div id="chatHistory" class="mb-4">
-        {% for chat in chats %}
-            <div class="card mb-2">
-                <div class="card-header">
-                    <small class="text-muted">{{ chat.timestamp }}</small>
+        <!-- Main Chat Area -->
+        <div class="col-md-12"> <!-- Adjust col-md-9 if using sidebar -->
+            <div class="chat-container d-flex flex-column h-100">
+
+                <!-- Chat History Display Area -->
+                <div id="chatHistory" class="chat-history flex-grow-1 overflow-auto p-3">
+                    {% if chats %}
+                        {% for chat in chats %}
+                            <div class="message-container mb-3">
+                                <!-- User Message -->
+                                <div class="message-user d-flex justify-content-end mb-1">
+                                    <div class="message-bubble bg-primary text-white p-3 rounded">
+                                        <div class="message-content">{{ chat.prompt }}</div>
+                                    </div>
+                                </div>
+                                <!-- AI Message -->
+                                <div class="message-ai d-flex justify-content-start mb-1">
+                                    <div class="message-bubble bg-light border p-3 rounded">
+                                        <div class="message-content">{{ chat.response }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="welcome-message text-center my-auto p-4 text-muted">
+                            <h2>Welcome to TextGenerationDelta</h2>
+                            <p>Send a message to start chatting with your local AI.</p>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="card-body">
-                    <h6 class="card-title">Prompt:</h6>
-                    <p class="card-text">{{ chat.prompt }}</p>
-                    <h6 class="card-title">Response:</h6>
-                    <p class="card-text">{{ chat.response }}</p>
+
+                <!-- Input Area -->
+                <div class="input-area p-3 border-top bg-white">
+                    <form id="chatForm" method="post">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <textarea class="form-control" id="promptInput" name="prompt" rows="1" placeholder="Type your message here..." required></textarea>
+                            <button class="btn btn-primary" type="submit" id="sendButton">
+                                <i class="bi bi-send"></i> <!-- Send icon -->
+                            </button>
+                        </div>
+                        <!-- Loading Indicator (Initially Hidden) -->
+                        <div id="loadingIndicator" class="mt-2 d-none text-center">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Thinking...</span>
+                            </div>
+                            <small class="text-muted">AI is thinking...</small>
+                        </div>
+                    </form>
                 </div>
             </div>
-        {% empty %}
-            <p>No chat history yet.</p>
-        {% endfor %}
-    </div>
-
-    <!-- Form for New Prompt -->
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="promptInput" class="form-label">New Prompt:</label>
-            <textarea class="form-control" id="promptInput" name="prompt" rows="3" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Send to AI</button>
-    </form>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('chatForm');
+    const promptInput = document.getElementById('promptInput');
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+
+    // Function to add a message to the chat history display
+    function addMessageToDisplay(prompt, response) {
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'message-container mb-3';
+
+        // User message bubble
+        const userBubble = document.createElement('div');
+        userBubble.className = 'message-user d-flex justify-content-end mb-1';
+        userBubble.innerHTML = `
+            <div class="message-bubble bg-primary text-white p-3 rounded">
+                <div class="message-content">${prompt}</div>
+            </div>
+        `;
+
+        // AI message bubble
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'message-ai d-flex justify-content-start mb-1';
+        aiBubble.innerHTML = `
+            <div class="message-bubble bg-light border p-3 rounded">
+                <div class="message-content">${response}</div>
+            </div>
+        `;
+
+        messageContainer.appendChild(userBubble);
+        messageContainer.appendChild(aiBubble);
+        chatHistoryDiv.appendChild(messageContainer);
+
+        // Scroll to the bottom
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    }
+
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const prompt = promptInput.value.trim();
+        if (!prompt) return; // Don't send empty prompts
+
+        // Disable input and show loading
+        promptInput.disabled = true;
+        document.getElementById('sendButton').disabled = true;
+        loadingIndicator.classList.remove('d-none');
+
+        // Add user message to display immediately (optimistic update)
+        addMessageToDisplay(prompt, '...'); // Placeholder while waiting
+
+        try {
+            // Submit the form using FormData and fetch
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // For a simple POST-redirect-GET, the page will reload after this block.
+            // If you want to handle response without reload, you might need to return JSON from the view.
+            // For now, we assume the page reloads after the Django view processes and redirects.
+            // The new chat entry will appear on the reloaded page.
+
+            // Clear the input field after submission
+            promptInput.value = '';
+
+        } catch (error) {
+            console.error('Error submitting prompt:', error);
+            // Handle error (e.g., show a message in the chat)
+            const lastMessageContainer = chatHistoryDiv.lastChild;
+            if (lastMessageContainer && lastMessageContainer.querySelector('.message-content').textContent === '...') {
+                lastMessageContainer.querySelector('.message-content').textContent = `Error: ${error.message}`;
+            }
+        } finally {
+            // Re-enable input and hide loading
+            promptInput.disabled = false;
+            document.getElementById('sendButton').disabled = true;
+            loadingIndicator.classList.add('d-none');
+        }
+    });
+
+    // Auto-resize textarea
+    promptInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+});
+</script>
+
 {% endblock %}

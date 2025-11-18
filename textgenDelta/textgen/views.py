@@ -1,30 +1,44 @@
 # textgen/views.py
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-import json
+from django.contrib import messages # Optional: for user feedback
 from .generation import generate_text # Import your updated generation function
 from .models import Chat # Import the Chat model
+import json # For AJAX requests
 
 @require_http_methods(["GET", "POST"])
 def index(request):
     """
-    Handles the main page: displays chat history and handles new prompts.
+    Handles the main chat page: displays chat history and handles new prompts.
     """
-    chats = Chat.objects.all() # Gets all chats, ordered by newest first due to Meta.ordering
+    # Fetch all chats, ordered by newest first
+    chats = Chat.objects.all()
 
     if request.method == 'POST':
         prompt = request.POST.get('prompt', '').strip()
         if prompt:
-            # Generate response using your function
-            response_text = generate_text(prompt=prompt) # Use your updated function
-            # The generation function now saves the chat automatically
-            # Redirect back to the index page to show the updated list
-            # Or, if using AJAX, return JsonResponse below
-            return redirect('textgen:index') # Redirect to the index view after POST
+            try:
+                # Generate response using your function (which saves the chat)
+                response_text = generate_text(prompt=prompt)
+                if response_text: # Check if generation was successful
+                    # Optionally, add a success message
+                    # messages.success(request, 'Message sent and response received.')
+                    pass
+                else:
+                    # Optionally, add an error message if generation failed
+                    messages.error(request, 'Failed to generate response.')
+            except Exception as e:
+                # Log the error and optionally add a message
+                import logging
+                logging.exception("Error generating text in view")
+                messages.error(request, 'An error occurred during generation.')
 
-    # For GET requests, or after handling POST, render the page with history
+            # Redirect back to the index page to show the updated list and clear the form
+            return redirect('textgen:index') # Use app namespace if defined
+
+    # For GET requests, render the page with history
     return render(request, 'textgen/index.html', {'chats': chats})
 
 @csrf_exempt

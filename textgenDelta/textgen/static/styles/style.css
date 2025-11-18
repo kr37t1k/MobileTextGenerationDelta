@@ -1,0 +1,75 @@
+/* Base styles */
+body {
+  /* Use a modern, readable font */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f8f9fa; /* Light grey background */
+}
+
+/* Chat Container */
+.chat-container {
+  height: 80vh; /* Adjust based on your needs, considering navbar/footer */
+  max-height: calc(100vh - 120px); /* Subtract navbar/footer height */
+  border: 1px solid #dee2e6; /* Light border */
+  border-radius: 0.5rem; /* Rounded corners */
+  background-color: white; /* White background for the chat area */
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Subtle shadow */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Chat History Area */
+.chat-history {
+  overflow-y: auto; /* Scrollable if content overflows */
+  padding: 1rem; /* Add padding inside */
+  background-color: #f9f9f9; /* Slightly different background for history */
+}
+
+/* Message Bubbles */
+.message-bubble {
+  max-width: 80%; /* Prevent bubbles from being too wide */
+  word-wrap: break-word; /* Break long words */
+  white-space: pre-wrap; /* Preserve line breaks and spaces */
+  border-radius: 0.75rem; /* More rounded corners */
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Subtle shadow */
+}
+
+/* User Message Bubble */
+.message-user .message-bubble {
+  background-color: #0d6efd; /* Primary color (Bootstrap) */
+  color: white;
+  border-bottom-right-radius: 0; /* Pointy end on the right for user */
+}
+
+/* AI Message Bubble */
+.message-ai .message-bubble {
+  background-color: #e9ecef; /* Light grey for AI */
+  border: 1px solid #ced4da; /* Subtle border */
+  border-bottom-left-radius: 0; /* Pointy end on the left for AI */
+}
+
+/* Input Area */
+.input-area {
+  border-top: 1px solid #dee2e6; /* Separator line */
+}
+
+/* Welcome Message */
+.welcome-message {
+  color: #6c757d; /* Muted color */
+  font-style: italic;
+}
+
+/* Loading Indicator */
+#loadingIndicator {
+  margin-top: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chat-container {
+    height: 75vh; /* Adjust height for smaller screens */
+    max-height: calc(100vh - 100px); /* Adjust for smaller navbar/footer */
+  }
+  .message-bubble {
+    max-width: 90%; /* Allow wider bubbles on small screens */
+  }
+}
