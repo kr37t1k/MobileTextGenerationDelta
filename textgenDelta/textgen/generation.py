@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 # --- Default Configuration ---
-DEFAULT_MODEL_PATH = "models/qwen2.5-1.5b-instruct-q4_k_m.gguf" # Updated default path example
+DEFAULT_MODEL_PATH = "/sdcard/fuji/qwen2.5-1.5b-instruct-q4_k_m.gguf"
 DEFAULT_CHAT_FORMAT = "qwen"
 DEFAULT_GPU_LAYERS = -1
 DEFAULT_BATCH_SIZE = 512

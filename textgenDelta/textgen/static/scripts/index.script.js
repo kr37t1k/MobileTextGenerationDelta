@@ -103,6 +103,12 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
 
         const prompt = promptInput.value.trim();
+        const role = roleInput.value.trim();
+        const temp = temperatureInput.value.trim();
+        const maxtokens = maxTokensInput.value.trim();
+        const topp = topPInput.value.trim();
+        const topk = topKInput.value.trim();
+        const modelpath = modelPathInput.value.trim();
         console.log(prompt, promptInput.value); // Log for debugging
         if (!prompt) return;
 
@@ -122,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Sending prompt to server..."); // Log for debugging
             const response = await fetch('', {
                 method: 'POST',
-                body: new URLSearchParams({ prompt: prompt }), // Send as form data
+                body: new URLSearchParams({ prompt: prompt, role: role, temperature: temp, maxTokens: maxtokens, topP: topp, topK: topk, model_path: modelpath }), // Send as form data
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Include CSRF token for form data

@@ -33,9 +33,10 @@ def index(request: HttpRequest) -> HttpResponse:
         if request.content_type == 'application/x-www-form-urlencoded':
             # Handle standard form submission (e.g., if JavaScript is disabled)
             prompt = request.POST.get('prompt', '').strip()
+            data = request.POST
             if prompt:
                 try:
-                    response_text = generate_text(prompt=prompt)
+                    response_text = generate_text(prompt=prompt, model_path=data.get('model_path', None), role=data.get('role', None), temperature=data.get('temperature', None), max_tokens=data.get('max_tokens', None), top_p=data.get('top_p', None), top_k=data.get('top_k', None))
                     if response_text:
                         pass  # Chat is saved automatically in generate_text
                     else:
@@ -57,7 +58,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
             if prompt:
                 try:
-                    response_text = generate_text(prompt=prompt)
+                    response_text = generate_text(prompt=prompt, model_path=data.get('model_path', None), role=data.get('role', None), temperature=data.get('temperature', None), max_tokens=data.get('max_tokens', None), top_p=data.get('top_p', None), top_k=data.get('top_k', None))
                     if response_text:
                         # Fetch the newly created chat object to return its details
                         latest_chat = Chat.objects.latest('id')  # Or filter by prompt/response if not latest
