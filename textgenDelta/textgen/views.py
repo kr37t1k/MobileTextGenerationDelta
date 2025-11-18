@@ -20,11 +20,11 @@ def index(request):
         defaults={
             'role': 'user',
             'temperature': 0.7,
-            'model_path': './qwen2.5b.gguf',
+            'model_path': '/sdcard/fuji/Saiga-7B_LLAMA-model-q2_K.gguf',
             'max_tokens': 200,
             'top_p': 1.0,
             'top_k': 50,
-            'seed': 1337
+            'seed': -1
         }
     )
 
@@ -32,11 +32,8 @@ def index(request):
         prompt = request.POST.get('prompt', '').strip()
         if prompt:
             try:
-                # Pass settings from the database to generate_text
-                # This requires modifying generate_text to accept these parameters or fetch them internally
-                # For now, generate_text might still use its internal logic or localStorage values if passed via JS
-                # Example: response_text = generate_text(prompt=prompt, temperature=default_settings.temperature, ...)
-                response_text = generate_text(prompt=prompt) # Assuming generate_text handles settings internally or via JS
+                # response_text = generate_text(prompt=prompt, temperature=default_settings.temperature, ...)
+                response_text = generate_text(prompt=prompt)
                 if response_text:
                     pass # Chat is saved automatically in generate_text
                 else:

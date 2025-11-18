@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
 
         const prompt = promptInput.value.trim();
+        console.log(prompt, promptInput.value);
         if (!prompt) return;
 
         // Disable input and show loading
@@ -42,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(form);
             const response = await fetch(form.action, {
                 method: 'POST',
-                body: formData,
+                body: "prompt=" + prompt,
             });
 
             if (!response.ok) {

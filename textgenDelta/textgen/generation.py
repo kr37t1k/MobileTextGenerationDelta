@@ -5,6 +5,7 @@ from .models import TextGenerationSettings, Chat # Import the Chat model
 
 # Configure logging for this module
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 # --- Default Configuration ---
 DEFAULT_MODEL_PATH = "models/qwen2.5-1.5b-instruct-q4_k_m.gguf" # Updated default path example

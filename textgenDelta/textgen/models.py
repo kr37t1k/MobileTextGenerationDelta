@@ -8,7 +8,7 @@ class TextGenerationSettings(models.Model):
 
     role = models.CharField(max_length=100, default='user')
     temperature = models.FloatField(default=0.7)
-    model_path = models.CharField(max_length=200, default='./qwen2.5b.gguf')
+    model_path = models.CharField(max_length=200, default='"/sdcard/fuji/qwen2.5-1.5b-instruct-q4_k_m.gguf" or "/sdcard/fuji/Saiga-7B_LLAMA-model-q2_K.gguf"')
     max_tokens = models.IntegerField(default=200)
     top_p = models.FloatField(default=1.0)
     top_k = models.IntegerField(default=50)
