@@ -7,9 +7,13 @@ from .models import TextGenerationSettings, Chat # Import the Chat model
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
+
+# /sdcard/fuji/Saiga-7B_LLAMA-model-q2_K.gguf /sdcard/fuji/qwen2.5-1.5b-instruct-q4_k_m.gguf
 # --- Default Configuration ---
-DEFAULT_MODEL_PATH = "/sdcard/fuji/qwen2.5-1.5b-instruct-q4_k_m.gguf"
-DEFAULT_CHAT_FORMAT = "qwen"
+# DEFAULT_MODEL_PATH = "/sdcard/fuji/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+# DEFAULT_CHAT_FORMAT = "qwen"
+DEFAULT_MODEL_PATH = "/sdcard/fuji/Saiga-7B_LLAMA-model-q2_K.gguf"
+DEFAULT_CHAT_FORMAT = "saiga"
 DEFAULT_GPU_LAYERS = -1
 DEFAULT_BATCH_SIZE = 512
 DEFAULT_THREADS = 4
@@ -55,6 +59,7 @@ def generate_text(
                  (settings.top_k if settings and settings.top_k is not None else DEFAULT_TOP_K)
 
     final_model_path = model_path or DEFAULT_MODEL_PATH
+    # proc = processor or DEFAULT_PROCESSOR
     final_stop_sequences = stop_sequences or DEFAULT_STOP_TOKENS
 
     logger.info(f"Generating text with model: {final_model_path}, role: {role}")
