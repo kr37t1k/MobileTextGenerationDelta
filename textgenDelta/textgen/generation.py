@@ -75,11 +75,11 @@ def generate_text(
 
         logger.debug(f"Calling model with prompt: '{prompt[:50]}...', params: temp={final_temperature}, max_tokens={final_max_tokens}, top_p={final_top_p}, top_k={final_top_k}")
         result = model(
-            prompt=prompt,
-            temperature=final_temperature,
-            max_tokens=final_max_tokens,
-            top_p=final_top_p,
-            top_k=final_top_k,
+            prompt=str(prompt),
+            temperature=float(final_temperature),
+            max_tokens=int(final_max_tokens),
+            top_p=float(final_top_p),
+            top_k=int(final_top_k),
             stop=final_stop_sequences,
             echo=False,
         )
