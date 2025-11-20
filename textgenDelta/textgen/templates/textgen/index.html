@@ -11,8 +11,8 @@
             <ul class="chat-history-list">
                 {% for chat in chats %}
                     <li data-chat-id="{{ chat.id }}">
-                        <div class="chat-title">{{ chat.prompt|truncatechars:30 }}</div> <!-- Truncate prompt as title -->
-                        <div class="chat-date">{{ chat.timestamp|date:"M d, H:i" }}</div> <!-- Format date -->
+                        <div class="chat-title">{{ chat.prompt|truncatechars:30 }}</div>
+                        <div class="chat-date">{{ chat.timestamp|date:"M d, H:i" }}</div>
                     </li>
                 {% empty %}
                     <li><em>No chats yet.</em></li>
@@ -20,7 +20,7 @@
             </ul>
             <!-- Settings Button -->
             <button class="settings-btn" id="openSettingsBtn">
-                <i class="bi bi-gear"></i> <!-- Settings icon -->
+                <i class="bi bi-gear"></i>
                 <span>Settings</span>
             </button>
         </div>
@@ -111,7 +111,6 @@
                     <label for="topKInput" class="settings-form-label">Top K:</label>
                     <input type="number" min="0" id="topKInput" class="settings-form-input" value="50">
                 </div>
-                <!-- Here will be more settings -->
             </form>
         </div>
         <div class="settings-modal-footer">
@@ -121,6 +120,6 @@
     </div>
 </div>
 
-<script src="{% static 'scripts/index.script.js' %}"></script>
+<script src="{% static 'scripts/chat-enhanced.js' %}"></script>
 
 {% endblock %}

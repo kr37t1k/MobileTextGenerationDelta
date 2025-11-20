@@ -1,0 +1,209 @@
+/* Dark Theme Styles */
+body.dark-theme {
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  color: #e9ecef;
+  background-size: 400% 400%;
+  animation: gradientShiftDark 15s ease infinite;
+}
+
+@keyframes gradientShiftDark {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Dark theme for navbar */
+body.dark-theme .navbar {
+  background: linear-gradient(135deg, #1a2a6c 0%, #2a4d69 100%) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark theme for chat container */
+body.dark-theme .chat-container {
+  background-color: #121826;
+}
+
+/* Dark theme for sidebar */
+body.dark-theme .sidebar {
+  background: linear-gradient(to bottom, #1a2332 0%, #121826 100%);
+  border-right: 1px solid #2d3748;
+}
+
+body.dark-theme .sidebar h4 {
+  color: #cbd5e0;
+}
+
+body.dark-theme .chat-history-list li {
+  background: linear-gradient(to right, #2d3748, #1a2332);
+  border: 1px solid #4a5568;
+  color: #e2e8f0;
+}
+
+body.dark-theme .chat-history-list li:hover {
+  background: linear-gradient(to right, #4a5568, #2d3748);
+  border-color: #718096;
+}
+
+body.dark-theme .chat-history-list li.active {
+  background: linear-gradient(to right, #2b6cb0, #2c5282);
+  border-color: #4299e1;
+}
+
+body.dark-theme .chat-history-list li .chat-title {
+  color: #e2e8f0;
+}
+
+body.dark-theme .chat-history-list li .chat-date {
+  color: #a0aec0;
+}
+
+/* Dark theme for settings button */
+body.dark-theme .settings-btn {
+  background: linear-gradient(to right, #6b46c1 0%, #3182ce 100%);
+}
+
+/* Dark theme for main chat area */
+body.dark-theme .main-chat {
+  background: linear-gradient(to bottom, #121826 0%, #0f1419 100%);
+}
+
+/* Dark theme for message bubbles */
+body.dark-theme .message-user .message-bubble {
+  background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%);
+  color: white;
+}
+
+body.dark-theme .message-ai .message-bubble {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  color: #e2e8f0;
+  border: 1px solid #718096;
+}
+
+/* Dark theme for input area */
+body.dark-theme .input-area {
+  background: linear-gradient(to bottom, #1a2332 0%, #121826 100%);
+  border-top: 1px solid #2d3748;
+}
+
+body.dark-theme #promptInput {
+  background-color: #2d3748;
+  border: 2px solid #4a5568;
+  color: #e2e8f0;
+}
+
+body.dark-theme #promptInput:focus {
+  border-color: #4299e1;
+  box-shadow: 0 0 0 0.25rem rgba(66, 153, 225, 0.25);
+}
+
+/* Dark theme for send button */
+body.dark-theme #sendButton {
+  background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%);
+}
+
+body.dark-theme #sendButton:hover {
+  background: linear-gradient(135deg, #4299e1 0%, #2b6cb0 100%);
+}
+
+/* Dark theme for footer */
+body.dark-theme .footer {
+  background: linear-gradient(135deg, #1a2a6c 0%, #2a4d69 100%);
+}
+
+/* Dark theme for settings modal */
+body.dark-theme .settings-modal-content {
+  background-color: #1a2332;
+}
+
+body.dark-theme .settings-modal-header {
+  background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%);
+}
+
+body.dark-theme .settings-modal-body {
+  background: #1a2332;
+}
+
+body.dark-theme .settings-form-input {
+  background-color: #2d3748;
+  border: 2px solid #4a5568;
+  color: #e2e8f0;
+}
+
+body.dark-theme .settings-form-input:focus {
+  border-color: #4299e1;
+  box-shadow: 0 0 0 0.25rem rgba(66, 153, 225, 0.25);
+  background-color: #2d3748;
+}
+
+body.dark-theme .settings-modal-footer {
+  background-color: #2d3748;
+  border-top: 1px solid #4a5568;
+}
+
+/* Dark theme for welcome message */
+body.dark-theme .welcome-message h2 {
+  background: linear-gradient(135deg, #4299e1, #90cdf4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.dark-theme .welcome-message p {
+  color: #a0aec0;
+}
+
+/* Dark theme for typing indicator */
+body.dark-theme .typing-indicator span {
+  background-color: #a0aec0;
+}
+
+/* Dark theme for loading indicator */
+body.dark-theme #loadingIndicator {
+  color: #cbd5e0;
+}
+
+/* Dark theme for notifications */
+body.dark-theme .notification {
+  backdrop-filter: blur(10px);
+}
+
+/* Dark theme for scrollbars */
+body.dark-theme .custom-scrollbar::-webkit-scrollbar-track {
+  background: #1a2332;
+}
+
+body.dark-theme .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #2b6cb0, #4299e1);
+}
+
+body.dark-theme .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #4299e1, #2b6cb0);
+}
+
+/* Additional dark theme elements */
+body.dark-theme .form-control {
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  color: #e2e8f0;
+}
+
+body.dark-theme .form-control:focus {
+  background-color: #2d3748;
+  border-color: #4299e1;
+  color: #e2e8f0;
+  box-shadow: 0 0 0 0.2rem rgba(66, 153, 225, 0.25);
+}
+
+body.dark-theme .btn {
+  border: 1px solid transparent;
+}
+
+body.dark-theme .btn-primary {
+  background: linear-gradient(135deg, #2b6cb0, #4299e1);
+  border-color: #2b6cb0;
+}
+
+body.dark-theme .btn-primary:hover {
+  background: linear-gradient(135deg, #4299e1, #2b6cb0);
+  border-color: #4299e1;
+}
